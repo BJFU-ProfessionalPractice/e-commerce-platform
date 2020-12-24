@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans" style="display: block;" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="/logincss/login.css">
+    <script type="text/javascript" src="/js/jquery-3.5.1.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("#reflection").css("opacity", 0.5);
+        });
+    </script>
+    <title>登录</title>
+</head>
+<body>
+<div class="main">
+    <div id="main_up"></div>
+    <div id="mian_down"></div>
+    <div id="loginform">
+        <div id="formheader">
+            <div id="formheadercontent">
+                <div id="formheadercontent_top">
+                </div>
+                <div id="formheadercontent_bottom">
+                </div>
+                <div id="titlecontent">
+                    资源共享平台
+                </div>
+                <p id="titlecontent_Eng">RESOURCE &nbsp &nbsp SHARING &nbsp &nbsp PLATFORM</p>
+                <div id="login_hint">
+                    LOGIN 用户登录 <p id="youjiantou">&#9658</p>
+                </div>
+                <div id="zhizhenimg">
+                    <img src="imgs/zhizhen.svg" height="65px" width="65px">
+                </div>
+            </div>
+        </div>
+        <div id="formbody">
+            <div id="formbodyimg">
+                <img src="imgs/loginphoto.svg" height="168px" width="243px">
+            </div>
+            <div id="formcontent">
+                <form action="/login" method="post">
+                    <div id="accountinput">
+                        用户&nbsp
+                        <div class="inputone">
+                            <input type="text" name="userName" style="border-width: 0; width:130px">
+                        </div>
+                    </div>
+                    <div id="passwordinput">
+                        密码&nbsp
+                        <div class="inputone">
+                            <input type="password" name="password" style="border-width: 0; width:130px">
+                        </div>
+                    </div>
+                    <div id="buttonView">
+                        <input id="loginbutton" type="submit" value="登录"><input id="resetbutton" type="reset" value="重置">
+                    </div>
+                    <label class="loginerror">
+                        [[${msg}]]
+                    </label>
+                </form>
+                <a th:href="@{/registerAccount}" class="register_link">
+                    无账户? 注册
+                </a>
+            </div>
+        </div>
+
+        <div id="formfooter">
+            <div id="formfooter_top">
+            </div>
+            <div id="formfooter_bottom">
+            </div>
+            <div id="footercontent">
+                版本 2020V1.0
+            </div>
+            <div id="footerphoto">
+                <div id="footerphotocontent">
+                </div>
+                <div id="footerphotocontent_one">
+                </div>
+                <div id="footerphotocontent_two">
+                </div>
+                <div id="footerphotocontent_three">
+                </div>
+            </div>
+        </div>
+        <div id="reflectView">
+            <div id="reflection"></div>
+            <div id="overlay"></div>
+            <div id="bj"></div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

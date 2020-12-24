@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>研究资源共享平台</title>
+    <link rel="stylesheet" href="../layui/css/layui.css">
+    <script src="../layui/layui.js"></script>
+    <script src="../js/jquery-3.5.1.js"></script>
+    <style>
+        /*对layui中的样式进行重写*/
+        .layui-tab-content {
+            padding: 0;/*layui-tab-content:默认有padding: 10px;的值，因为iframe的绝对定位脱离文档流，所以会存在20px的空白空间*/
+        }
+        .show-frame {
+            top: 50px!important;
+            /*默认.layui-layout-admin .layui-body {
+                top: 60px;
+                bottom: 44px;
+            }*/
+            overflow: hidden;/*消除浏览器最右边的滚动条*/
+        }
+        .frame {
+            position: absolute;
+            padding: 10px;/*与layui-footer隔开一段距离*/
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+
+    <div th:replace="/common/header :: headerBar"></div>
+    <div th:replace="/common/lefter :: lefterBar"></div>
+
+    <div class="layui-body show-frame">
+        <div class="layui-tab layui-tab-brief" lay-allowClose="true" lay-filter="empTab">
+            <br>
+            <ul class="layui-tab-title">
+                <li class="layui-this "><i class="layui-icon">资源信息</i></li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show" style="overflow-y:auto; height:750px">
+
+                        <br>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件ID:</label>
+                            <div class="layui-input-inline">
+                                <blockquote class="layui-elem-quote" style="width: 960px">
+                                    <p>[[${resource.resourceID}]]</p>
+                                </blockquote>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件名:</label>
+                            <div class="layui-input-inline">
+                                <blockquote class="layui-elem-quote" style="width: 960px">
+                                    <p>[[${resource.resourceName}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件类型:</label>
+                            <div class="layui-input-inline">
+                                <blockquote class="layui-elem-quote" style="width: 960px;height:20px">
+                                    <p>[[${resource.resourceType==1?'论文':(resource.resourceType==2?'代码':'数据集')}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">领域:</label>
+                            <div class="layui-input-block">
+                                <blockquote class="layui-elem-quote" style="width: 960px;height:20px">
+                                    <p>[[${territoryList==""?"空":territoryList}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">上传时间:</label>
+                            <div class="layui-input-inline">
+                                <blockquote class="layui-elem-quote" style="width: 960px;height:20px">
+                                    <p>[[${resource.getUploadTimeString()}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">上传者:</label>
+                            <div class="layui-input-inline">
+                                <blockquote class="layui-elem-quote" style="width: 960px;height:20px">
+                                    <p>[[${uploadUser.userName}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">文件介绍:</label>
+                            <div class="layui-input-block">
+                                <blockquote class="layui-elem-quote" style="width: 960px;height:20px">
+                                    <p>[[${resource.getIntroductionString()==""?"空":resource.getIntroductionString()}]]</p>
+                                </blockquote>
+                            </div>
+                        </div>
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">依赖资源</label>
+                        <div class="layui-input-block">
+                            <div>
+                                <table id="demo2" lay-filter="resourceTable" class="layui-table">
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">评论列表</label>
+                        <div class="layui-input-block">
+                            <div>
+                                <table id="demo1" lay-filter="discussTable" class="layui-table">
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                    <form class="layui-form" id="uploadDiscussForm">
+                        <div class="layui-form-item layui-form-text">
+                            <input type="number" hidden name="resourceID" id="resourceID" th:value="${resource.resourceID}">
+                            <label class="layui-form-label">添加评论</label>
+                            <div class="layui-input-block">
+                                <label>
+                                    <textarea placeholder="请输入评价内容" lay-verify="required" class="layui-textarea" name="mydiscuss"></textarea>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <div class="layui-input-block" style="margin-bottom: 120px">
+                                <button type="submit" lay-submit="" class="layui-btn" id="uploadDiscuss" lay-filter="uploadDiscuss">提交评论</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置评论</button>
+                                <a th:href="@{/downloadResource/}+${resource.resourceID}" class="layui-btn layui-btn-warm">下载</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="/common/footer :: footerBar"></div>
+</div>
+
+<script type="text/javascript"  th:inline="none">
+    layui.use('table', function(){
+        var table = layui.table;
+        var resourceID=$("#resourceID").val();
+        table.render({
+            elem: '#demo1'
+            ,height: 300
+            ,width: 1000
+            ,url:"/reloadDiscussList?resourceID="+resourceID
+            ,cols: [[
+                {field: 'discussContent', title: '评论内容', width:720}
+                ,{field: 'userName', title: '用户', width:150, align:'center'}
+                ,{fixed: 'right',title: '操作', width:130, align:'center', toolbar: '#barDemo'}
+            ]]
+        });
+
+        table.render({
+            elem: '#demo2'
+            ,height: 280
+            ,width: 1000
+            ,url:"/reloadRelationResourceTable?resourceID="+resourceID
+            ,cols: [[
+                {field: 'resourceID', title: 'ID', width:100, sort: true, fixed: 'left'}
+                ,{field: 'resourceName', title: '资源名称', width:300, sort: true}
+                ,{field: 'resourceType', title: '资源类别', width:120}
+                ,{field: 'uploadTime', title: '上传时间', width:400, sort: true}
+                ,{fixed: 'right',title: '操作', width:100, align:'center', toolbar: '#barDemo1'}
+            ]]
+        });
+    });
+
+
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="barDemo1">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+</script>
+<script type="text/javascript"  th:inline="none">
+    layui.use('table', function(){
+        var table = layui.table;
+        //监听工具条
+        table.on('tool(discussTable)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                layer.confirm('确定删除吗？', function(index){
+                    $.ajax({
+                        type: "post",
+                        url: "/deleteDiscuss?discussID="+data.discussID+"&userName="+data.userName,
+                        success: function (data1) {
+                            console.log(data1);
+                            if(data1["state"]==="ok"){
+                                obj.del();
+                                alert("删除成功！");
+                            }else{
+                                alert("您不是该评论的上传者，无法删除！");
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+        table.on('tool(resourceTable)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'detail'){
+                window.location.href="/resourcesee/"+data.resourceID;
+            }
+        });
+
+    });
+
+
+</script>
+
+<script type="text/javascript"  th:inline="none">
+    layui.use('form', function(){
+        var form = layui.form;
+        form.on('submit(uploadDiscuss)', function(data){
+            var jdata=data.field;
+            // alert(JSON.stringify(jdata));
+            var mydiscuss1=jdata["mydiscuss"];
+            // alert(mydiscuss1);
+            var resourceID1=jdata["resourceID"];
+            // alert(resourceID1);
+
+            $.ajax({
+                type: "post",
+                url: "/uploadDiscuss",
+                data:{"resourceID":resourceID1,"mydiscuss":mydiscuss1},
+                success: function (data1) {
+                    var table = layui.table;
+                    var resourceID=$("#resourceID").val();
+                    table.render({
+                        elem: '#demo1'
+                        ,height: 300
+                        ,width: 1000
+                        ,url:"/reloadDiscussList?resourceID="+resourceID
+                        ,cols: [[
+                            {field: 'discussContent', title: '评论内容', width:720}
+                            ,{field: 'userName', title: '用户', width:150, align:'center'}
+                            ,{fixed: 'right',title: '操作', width:130, align:'center', toolbar: '#barDemo'}
+                        ]]
+                    });
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<script>
+    //JavaScript代码区域
+    layui.use('element', function(){
+        var element = layui.element;
+        var $ = layui.$;
+        $("[name=t1]").click(function () {
+            var id = $(this).attr("id");
+            var content = $(this).attr("content");
+            if($("li[lay-id="+id+"]").length===0){
+                element.tabAdd("empTab",{
+                    title:$(this).attr("title"),
+                    content:"<iframe src='"+content+"' class='frame' frameborder='0'></iframe>",
+                    id:id
+                })
+            }
+            element.tabChange('empTab',id)
+        })
+
+    });
+</script>
+
+
+</body>
+</html>
