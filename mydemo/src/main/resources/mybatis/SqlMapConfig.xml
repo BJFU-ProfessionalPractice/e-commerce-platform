@@ -11,6 +11,8 @@
     <!-- 将实体中的所有类配置别名,引用实体类时可以使用实体类的别名来代替实体类 -->
     <typeAliases>
         <package name="com.example.demo.entity" />
+        <package name="com.example.demo.pojo" />
+        <package name="com.example.demo.vo" />
     </typeAliases>
     <!-- 将所有mapper映射文件引入 -->
     <mappers>

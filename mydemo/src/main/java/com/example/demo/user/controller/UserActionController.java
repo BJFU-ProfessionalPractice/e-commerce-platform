@@ -2,6 +2,7 @@ package com.example.demo.user.controller;
 
 
 import com.example.demo.entity.*;
+import com.example.demo.service.OrderService;
 import com.example.demo.user.service.UserService;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -30,6 +31,10 @@ public class UserActionController {
 
     @Autowired(required = false)
     UserService userService;
+
+    @Autowired(required = false)
+    OrderService orderService;
+
 
 
     @RequestMapping("/uploadResource")

@@ -37,32 +37,32 @@ public class UserTableController {
     }
 
     @RequestMapping(value = "/login")
-    public String login(HttpServletRequest request, UserTable userTable) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-
-        UserTable user=commonService.userLogin(userTable);
-        if(user!=null){
-            //用户存在
-            if(user.getPassword().equals(toMD5(userTable.getPassword()))){
-                //密码正确
-                request.getSession().setAttribute("user",user);
-                if(user.getUserType()==1){
-                    //注册用户
-                    return "registeruser/index";
-                }else{
-                    //管理员用户
-                    return "admuser/index";
-                }
-            }else{
-                //用户密码错误
-                request.setAttribute("msg","用户名或密码输入错误！");
-                return "common/login";
-            }
-        }else{
-            //用户不存在
-            request.setAttribute("msg","用户名或密码输入错误！");
-            return "common/login";
-        }
-    }
+//    public String login(HttpServletRequest request, UserTable userTable) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+//
+//        UserTable user=commonService.userLogin(userTable);
+//        if(user!=null){
+//            //用户存在
+//            if(user.getPassword().equals(toMD5(userTable.getPassword()))){
+//                //密码正确
+//                request.getSession().setAttribute("user",user);
+//                if(user.getUserType()==1){
+//                    //注册用户
+//                    return "registeruser/index";
+//                }else{
+//                    //管理员用户
+//                    return "admuser/index";
+//                }
+//            }else{
+//                //用户密码错误
+//                request.setAttribute("msg","用户名或密码输入错误！");
+//                return "common/login";
+//            }
+//        }else{
+//            //用户不存在
+//            request.setAttribute("msg","用户名或密码输入错误！");
+//            return "common/login";
+//        }
+//    }
 
     private String toMD5(String str) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         MessageDigest md=MessageDigest.getInstance("MD5");
@@ -171,5 +171,5 @@ public class UserTableController {
         JSONObject jsonObject=JSONObject.fromObject(returnState);
         response.getWriter().write(jsonObject.toString());
     }
-    
+
 }
