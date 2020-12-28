@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class ShoppingCartService {
         try {
             list = cartMapper.select(cart);
             for (ShoppingCart c : list) {
+                System.out.println(c.getIsCheck()==1);
                 cartVoList.add(getCartVo(c));
             }
         } catch (Exception e) {
@@ -88,7 +90,8 @@ public class ShoppingCartService {
         cartVo.setPrice(product.getProductSellingPrice());
         cartVo.setNum(cart.getNum());
         cartVo.setMaxNum(5); // TODO 这里默认设为5 后期再动态修改
-        cartVo.setCheck(false);
+//        System.out.println(cart.getIsCheck()==1);
+        cartVo.setCheck(cart.getIsCheck()==1);
         return cartVo;
     }
 
@@ -138,6 +141,50 @@ public class ShoppingCartService {
         } catch (XmException e) {
             e.printStackTrace();
             throw new XmException(ExceptionEnum.DELETE_CART_ERROR);
+        }
+    }
+
+    public void deleteCartByProductId(String productId, String userId) {
+        Example example=new Example(ShoppingCart.class);
+        example.selectProperties("id","productId","userId","num", "isCheck")
+                .and()
+                .andEqualTo("userId",userId)
+                .andEqualTo("productId",productId);
+
+        try {
+            cartMapper.deleteByExample(example);
+        } catch (XmException e) {
+            e.printStackTrace();
+            throw new XmException(ExceptionEnum.DELETE_CART_ERROR);
+        }
+    }
+
+    public void updateSelectByUserId(String userId, Integer isSelect){
+        Example example=new Example(ShoppingCart.class);
+        example.and()
+                .andEqualTo("userId",userId);
+        ShoppingCart cart =new ShoppingCart();
+        cart.setIsCheck(isSelect);
+        try {
+            cartMapper.updateByExampleSelective(cart,example);
+        } catch (XmException e) {
+            e.printStackTrace();
+            throw new XmException(ExceptionEnum.SELECT_PRODUCT_FAIL);
+        }
+    }
+
+    public void updateProductSelect(String userId, String productId, Integer isSelect){
+        Example example=new Example(ShoppingCart.class);
+        example.and()
+                .andEqualTo("userId",userId)
+                .andEqualTo("productId",productId);
+        ShoppingCart cart =new ShoppingCart();
+        cart.setIsCheck(isSelect);
+        try {
+            cartMapper.updateByExampleSelective(cart,example);
+        } catch (XmException e) {
+            e.printStackTrace();
+            throw new XmException(ExceptionEnum.SELECT_PRODUCT_FAIL);
         }
     }
 

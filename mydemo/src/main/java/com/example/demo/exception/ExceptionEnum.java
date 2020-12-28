@@ -60,6 +60,8 @@ public enum ExceptionEnum {
     GET_SECKILL_IS_REUSE(002, "秒杀重复"),
     GET_SECKILL_IS_NOT_START(002, "秒杀尚未开始"),
 
+    SELECT_PRODUCT_FAIL(002, "选择商品失败"),
+
     ;
     private int code;
     private String msg;

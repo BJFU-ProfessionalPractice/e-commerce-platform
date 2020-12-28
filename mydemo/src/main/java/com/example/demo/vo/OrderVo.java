@@ -2,6 +2,7 @@ package com.example.demo.vo;
 
 import com.example.demo.pojo.Order;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Auther: wdd
@@ -9,6 +10,7 @@ import lombok.Data;
  * @Description:
  */
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class OrderVo extends Order {
 
     private String productName;

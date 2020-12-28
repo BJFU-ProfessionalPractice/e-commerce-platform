@@ -16,7 +16,7 @@ public class IPAddress {
 
     public static String getIP() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
-        return "http://"+"172.23.101.230"+":8082";
+        return "http://"+"172.26.217.104"+":8082";
     }
 
 }

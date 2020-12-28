@@ -21,6 +21,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 import com.example.demo.util.IPAddress;
 
@@ -87,18 +88,8 @@ public class ShopActionController {
         String username= request.getParameter("username");
         User user= userService.getUserByName(request.getParameter("username"));
 
-        List<CartVo> list = shoppingCartService.getCartByUserId(""+user.getUserId());
-        int cartTotalPrice=0,cartTotalQuantity=0;
-        for(int i=0;i<list.size();i++){
-            cartTotalPrice+=list.get(i).getPrice()*list.get(i).getNum();
-            cartTotalQuantity+=list.get(i).getNum();
-            list.get(i).setProductImg(IPAddress.getIP()+"/public/imgs/productList/phone.png");
-        }
         StatusCode statusCode=new StatusCode();
-        statusCode.setCartTotalPrice(cartTotalPrice);
-        statusCode.setCartTotalQuantity(cartTotalQuantity);
-        statusCode.setCode(1);
-        statusCode.setData(list);
+        initStateCode(statusCode, ""+user.getUserId());
         response.setContentType("application/json;charset=utf-8");
         JSONObject jsonObject=JSONObject.fromObject(statusCode);
         response.getWriter().write(jsonObject.toString());
@@ -120,18 +111,82 @@ public class ShopActionController {
     public void carts(@PathVariable String username, @PathVariable String productId , @PathVariable String num,HttpServletRequest request, HttpServletResponse response) throws IOException {
         User user= userService.getUserByName(username);
         shoppingCartService.updateCartNumByproduct(productId,""+user.getUserId(),num);
-        List<CartVo> list = shoppingCartService.getCartByUserId(""+user.getUserId());
+        StatusCode statusCode=new StatusCode();
+        initStateCode(statusCode, ""+user.getUserId());
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+
+    @RequestMapping("/carts/remove/{username}/{productId}")
+    public void carts_remove(@PathVariable String username, @PathVariable String productId,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user= userService.getUserByName(username);
+        shoppingCartService.deleteCartByProductId(productId, ""+user.getUserId());
+
+
+        StatusCode statusCode=new StatusCode();
+        initStateCode(statusCode, ""+user.getUserId());
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+    public void initStateCode(StatusCode statusCode, String userId) throws UnknownHostException {
+
+        List<CartVo> list = shoppingCartService.getCartByUserId(userId);
         int cartTotalPrice=0,cartTotalQuantity=0;
+        int selectCount=0;
         for(int i=0;i<list.size();i++){
+            if(list.get(i).isCheck()){
+                selectCount+=list.get(i).getNum();
+            }
             cartTotalPrice+=list.get(i).getPrice()*list.get(i).getNum();
             cartTotalQuantity+=list.get(i).getNum();
             list.get(i).setProductImg(IPAddress.getIP()+"/public/imgs/productList/phone.png");
         }
-        StatusCode statusCode=new StatusCode();
         statusCode.setCartTotalPrice(cartTotalPrice);
         statusCode.setCartTotalQuantity(cartTotalQuantity);
         statusCode.setCode(1);
+        statusCode.setSelectCount(selectCount);
         statusCode.setData(list);
+    }
+
+    @RequestMapping("/carts/selectAll/{username}")
+    public void carts_selectAll(@PathVariable String username ,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user= userService.getUserByName(username);
+        shoppingCartService.updateSelectByUserId(""+user.getUserId(), 1);
+
+        StatusCode statusCode=new StatusCode();
+        initStateCode(statusCode, ""+user.getUserId());
+        statusCode.setSelectAll(true);
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+    @RequestMapping("/carts/select/{username}/{productId}/{isSelect}")
+    public void carts_selectAll(@PathVariable String username, @PathVariable String productId, @PathVariable Integer isSelect
+            ,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user= userService.getUserByName(username);
+        shoppingCartService.updateProductSelect(""+user.getUserId(), productId, isSelect);
+
+        StatusCode statusCode=new StatusCode();
+        initStateCode(statusCode, ""+user.getUserId());
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+    @RequestMapping("/carts/unSelectAll/{username}")
+    public void unSelectAll(@PathVariable String username ,HttpServletRequest request, HttpServletResponse response) throws IOException {
+        User user= userService.getUserByName(username);
+        shoppingCartService.updateSelectByUserId(""+user.getUserId(), 0);
+
+
+        StatusCode statusCode=new StatusCode();
+        initStateCode(statusCode, ""+user.getUserId());
+        statusCode.setSelectAll(false);
         response.setContentType("application/json;charset=utf-8");
         JSONObject jsonObject=JSONObject.fromObject(statusCode);
         response.getWriter().write(jsonObject.toString());

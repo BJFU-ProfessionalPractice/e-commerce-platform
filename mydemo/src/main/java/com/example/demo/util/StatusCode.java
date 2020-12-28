@@ -6,6 +6,25 @@ public class StatusCode {
     private Object data;
     private String username;
     private int count;
+    private int selectCount;
+    private boolean isSelectAll;
+
+    public boolean isSelectAll() {
+        return isSelectAll;
+    }
+
+    public void setSelectAll(boolean selectAll) {
+        isSelectAll = selectAll;
+    }
+
+    public int getSelectCount() {
+        return selectCount;
+    }
+
+    public void setSelectCount(int selectCount) {
+        this.selectCount = selectCount;
+    }
+
     private int cartTotalPrice;
     private int cartTotalQuantity;
 
