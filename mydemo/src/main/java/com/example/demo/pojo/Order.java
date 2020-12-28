@@ -25,6 +25,26 @@ public class Order {
 
     private Integer addressId;
 
+    private Integer payTime;
+
+    private Integer state;
+
+    public Integer getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(Integer payTime) {
+        this.payTime = payTime;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
+    }
+
     public Integer getId() {
         return id;
     }

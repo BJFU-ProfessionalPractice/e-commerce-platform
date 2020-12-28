@@ -17,6 +17,8 @@ public class ShoppingCart {
 
     private Integer num;
 
+    private Integer isCheck;
+
     public Integer getIsCheck() {
         return isCheck;
     }
@@ -24,8 +26,6 @@ public class ShoppingCart {
     public void setIsCheck(Integer isCheck) {
         this.isCheck = isCheck;
     }
-
-    private Integer isCheck;
 
     public Integer getId() {
         return id;

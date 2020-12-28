@@ -16,6 +16,16 @@ public class Address {
     private String tag;
     private Integer shopuserId;
 
+    public Integer getDefaultAddr() {
+        return defaultAddr;
+    }
+
+    public void setDefaultAddr(Integer defaultAddr) {
+        this.defaultAddr = defaultAddr;
+    }
+
+    private Integer defaultAddr;
+
     public Integer getId() {
         return id;
     }

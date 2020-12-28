@@ -55,6 +55,7 @@ public class ShoppingCartService {
         ShoppingCart cart = new ShoppingCart();
         cart.setUserId(Integer.parseInt(userId));
         cart.setProductId(Integer.parseInt(productId));
+        cart.setIsCheck(1);
         // 查看数据库是否已存在,存在数量直接加1
         ShoppingCart one = cartMapper.selectOne(cart);
         if (one != null) {
