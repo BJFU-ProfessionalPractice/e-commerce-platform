@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum ExceptionEnum {
 
+    INSERT_ADDRESS_FAIL(002, "添加地址失败"),
     DELETE_ADDRESS_FAIL(002, "删除地址失败"),
 
     GET_CAROUSEL_ERROR(002, "轮播图查询失败"),

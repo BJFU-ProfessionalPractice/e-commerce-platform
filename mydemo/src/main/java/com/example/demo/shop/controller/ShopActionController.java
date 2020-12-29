@@ -281,8 +281,29 @@ public class ShopActionController {
 
     @RequestMapping("/address/delete/{addressId}")
     public void address_delete(@PathVariable String addressId ,HttpServletResponse response, HttpServletRequest request) throws IOException {
+        System.out.println(addressId);
         addressService.deleteAddressById(addressId);
 
+    }
+
+    @RequestMapping("/address/add")
+    public void address_delete(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        String username = request.getParameter("username");
+        String people =request.getParameter("people");
+        System.out.println(people);
+        String location= request.getParameter("location");
+        String tag= request.getParameter("tag");
+        String phone =request.getParameter("phone");
+
+        User user= userService.getUserByName(username);
+        Address address=new Address();
+        address.setPeople(people);
+        address.setIsDelete(0);
+        address.setLocation(location);
+        address.setPhone(phone);
+        address.setTag(tag);
+        address.setShopuserId(user.getUserId());
+        addressService.addAddress(address);
     }
 
 

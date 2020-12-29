@@ -35,14 +35,23 @@ public class AddressService {
         Address address=new Address();
         address.setIsDelete(1);
 
-        Example example=new Example(ShoppingCart.class);
-        example.and()
-                .andEqualTo("id",Integer.parseInt(addressId));
+        Example example=new Example(Address.class);
+        example.and().andEqualTo("id",Integer.parseInt(addressId));
         try {
             addressMapper.updateByExampleSelective(address, example);
         } catch (XmException e) {
             e.printStackTrace();
             throw new XmException(ExceptionEnum.DELETE_ADDRESS_FAIL);
+        }
+
+    }
+
+    public void addAddress(Address address){
+        try {
+            addressMapper.insert(address);
+        } catch (XmException e) {
+            e.printStackTrace();
+            throw new XmException(ExceptionEnum.INSERT_ADDRESS_FAIL);
         }
     }
 
