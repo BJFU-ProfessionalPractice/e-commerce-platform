@@ -1,12 +1,10 @@
 package com.example.demo.shop.controller;
 
+import com.example.demo.pojo.Address;
 import com.example.demo.pojo.Product;
 import com.example.demo.pojo.ShoppingCart;
 import com.example.demo.pojo.User;
-import com.example.demo.service.OrderService;
-import com.example.demo.service.ProductService;
-import com.example.demo.service.ShoppingCartService;
-import com.example.demo.service.UserService;
+import com.example.demo.service.*;
 import com.example.demo.util.StatusCode;
 import com.example.demo.vo.CartVo;
 import net.sf.json.JSONObject;
@@ -256,6 +254,35 @@ public class ShopActionController {
         response.setContentType("application/json;charset=utf-8");
         JSONObject jsonObject=JSONObject.fromObject(statusCode);
         response.getWriter().write(jsonObject.toString());
+    }
+
+
+    @Autowired(required = false)
+    AddressService addressService;
+
+    @RequestMapping("/shippings/{username}")
+    public void shippings(@PathVariable String username ,HttpServletResponse response, HttpServletRequest request) throws IOException {
+
+        User user= userService.getUserByName(username);
+        List<Address> list=addressService.getAllAddress(""+user.getUserId());
+        for(int i=0;i<list.size();i++){
+            if(list.get(i).getIsDelete()==1){
+                list.remove(i);
+                i--;
+            }
+        }
+        StatusCode statusCode=new StatusCode();
+        statusCode.setCode(1);
+        statusCode.setData(list);
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+    @RequestMapping("/address/delete/{addressId}")
+    public void address_delete(@PathVariable String addressId ,HttpServletResponse response, HttpServletRequest request) throws IOException {
+        addressService.deleteAddressById(addressId);
+
     }
 
 

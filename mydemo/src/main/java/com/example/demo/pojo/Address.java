@@ -15,6 +15,15 @@ public class Address {
     private String location;
     private String tag;
     private Integer shopuserId;
+    private Integer isDelete;
+
+    public Integer getIsDelete() {
+        return isDelete;
+    }
+
+    public void setIsDelete(Integer isDelete) {
+        this.isDelete = isDelete;
+    }
 
     public Integer getDefaultAddr() {
         return defaultAddr;

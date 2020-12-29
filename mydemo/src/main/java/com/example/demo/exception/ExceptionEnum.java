@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public enum ExceptionEnum {
 
+    DELETE_ADDRESS_FAIL(002, "删除地址失败"),
+
     GET_CAROUSEL_ERROR(002, "轮播图查询失败"),
     GET_CAROUSEL_NOT_FOUND(002, "轮播图为空"),
 
