@@ -2,21 +2,26 @@ package com.example.demo.service;
 
 import com.example.demo.exception.ExceptionEnum;
 import com.example.demo.exception.XmException;
+import com.example.demo.mapper.AddressMapper;
 import com.example.demo.mapper.OrderMapper;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.mapper.ShoppingCartMapper;
+import com.example.demo.pojo.Address;
 import com.example.demo.pojo.Order;
 import com.example.demo.pojo.Product;
 import com.example.demo.pojo.ShoppingCart;
 import com.example.demo.util.IdWorker;
 import com.example.demo.vo.CartVo;
 import com.example.demo.vo.OrderVo;
+import com.example.demo.vo.OrderVoVo;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tk.mybatis.mapper.entity.Example;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,14 +41,17 @@ public class OrderService {
     private ShoppingCartMapper cartMapper;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private AddressMapper addressMapper;
 
 
     private final static String SECKILL_PRODUCT_USER_LIST = "seckill:product:user:list";
 
     @Transactional
-    public void addOrder(List<CartVo> cartVoList, Integer userId) {
+    public String addOrder(List<CartVo> cartVoList, Integer userId, Integer addressId) {
         // 先添加订单
         String orderId = idWorker.nextId() + ""; // 订单id
+
         long time = new Date().getTime(); // 订单生成时间
         for (CartVo cartVo : cartVoList) {
             Order order = new Order();
@@ -53,7 +61,11 @@ public class OrderService {
             order.setProductId(cartVo.getProductId());
             order.setProductPrice(cartVo.getPrice());
             order.setUserId(userId);
+            order.setState(0);
+            order.setAddressId(addressId);
+
             try {
+                System.out.println(order.toString());
                 orderMapper.insert(order);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -78,7 +90,7 @@ public class OrderService {
             e.printStackTrace();
             throw new XmException(ExceptionEnum.ADD_ORDER_ERROR);
         }
-
+        return orderId;
     }
 
     public List<List<OrderVo>> getOrder(Integer userId) {
@@ -98,6 +110,50 @@ public class OrderService {
             throw new XmException(ExceptionEnum.GET_ORDER_ERROR);
         }
         return ret;
+    }
+
+
+    public List<OrderVoVo> getOrderVoVo(Integer userId){
+        List<OrderVoVo> orderVoVoList = new ArrayList<>();
+        try {
+            Example example=new Example(Order.class);
+            example.selectProperties("orderId","productNum","addressId","productPrice", "state","orderTime").and()
+                    .andEqualTo("userId",userId);
+            List<Order> orderList = orderMapper.selectByExample(example);
+            Set<String> orderIdSet=new HashSet<>();
+            for(int i=0;i<orderList.size();i++){
+                orderIdSet.add(""+orderList.get(i).getOrderId());
+                System.out.println(orderList.get(i).getAddressId());
+            }
+            orderIdSet.forEach(v->{
+                OrderVoVo orderVoVo=new OrderVoVo();
+                Double total= 0.0;
+                List<Order> orderList1=new ArrayList<>();
+                for(int i=0;i<orderList.size();i++){
+                    if(orderList.get(i).getOrderId().equals(v)){
+                        orderList1.add(orderList.get(i));
+                        total+=orderList.get(i).getProductPrice()*orderList.get(i).getProductNum();
+
+                        final Date date = new Date(orderList.get(i).getOrderTime());//新建一个时间对象
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        final String yourtime = sdf.format(date);
+                        orderVoVo.setTime(yourtime);
+                        orderVoVo.setState(orderList.get(i).getState());
+                        Address address =addressMapper.selectByPrimaryKey(orderList.get(i).getAddressId());
+                        orderVoVo.setPeople(address.getPeople());
+                    }
+                }
+                orderVoVo.setOrderList(orderList1);
+                orderVoVo.setTotalPrice(total);
+                orderVoVoList.add(orderVoVo);
+            }
+            );
+
+        } catch (XmException e) {
+            e.printStackTrace();
+            throw new XmException(ExceptionEnum.GET_ORDER_ERROR);
+        }
+        return orderVoVoList;
     }
 
 

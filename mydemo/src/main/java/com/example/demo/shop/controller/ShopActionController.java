@@ -4,6 +4,8 @@ import com.example.demo.pojo.*;
 import com.example.demo.service.*;
 import com.example.demo.util.StatusCode;
 import com.example.demo.vo.CartVo;
+import com.example.demo.vo.OrderVo;
+import com.example.demo.vo.OrderVoVo;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -66,9 +68,9 @@ public class ShopActionController {
 
         User user= userService.getUserByName(request.getParameter("username"));
 
-//        System.out.println(user.toString());
-        List<CartVo> list= shoppingCartService.getCartByUserId(""+user.getUserId());
 
+        List<CartVo> list= shoppingCartService.getCartByUserId(""+user.getUserId());
+        System.out.println(list.size());
         statusCode.setCount(list.size());
         response.setContentType("application/json;charset=utf-8");
         JSONObject jsonObject=JSONObject.fromObject(statusCode);
@@ -135,7 +137,7 @@ public class ShopActionController {
             }
             cartTotalPrice+=list.get(i).getPrice()*list.get(i).getNum();
             cartTotalQuantity+=list.get(i).getNum();
-            list.get(i).setProductImg(IPAddress.getIP()+"/public/imgs/productList/phone.png");
+            list.get(i).setProductImg(IPAddress.getIP()+"/"+list.get(i).getProductImg());
         }
         statusCode.setCartTotalPrice(cartTotalPrice);
         statusCode.setCartTotalQuantity(cartTotalQuantity);
@@ -196,7 +198,7 @@ public class ShopActionController {
 
         list = list.subList(0,Math.min(pagesize,list.size()));
         for(int i=0;i<list.size();i++){
-            list.get(i).setProductPicture(IPAddress.getIP()+"/public/imgs/phone/new.png");
+            list.get(i).setProductPicture(IPAddress.getIP()+"/"+list.get(i).getProductPicture());
         }
 
         StatusCode statusCode=new StatusCode();
@@ -211,7 +213,7 @@ public class ShopActionController {
     @RequestMapping("/products/{productID}")
     public void products(@PathVariable String productID ,HttpServletRequest request, HttpServletResponse response) throws IOException {
         Product product =productService.getProductById(productID);
-        product.setProductPicture(IPAddress.getIP()+"/public/imgs/phone/new.png");
+        product.setProductPicture(IPAddress.getIP()+"/"+product.getProductPicture());
 
         StatusCode statusCode=new StatusCode();
         statusCode.setCode(1);
@@ -284,7 +286,7 @@ public class ShopActionController {
     public void address_delete(HttpServletResponse response, HttpServletRequest request) throws IOException {
         String username = request.getParameter("username");
         String people =request.getParameter("people");
-        System.out.println(people);
+
         String location= request.getParameter("location");
         String tag= request.getParameter("tag");
         String phone =request.getParameter("phone");
@@ -302,12 +304,12 @@ public class ShopActionController {
 
 
     @RequestMapping("/order")
-    public void order(HttpServletRequest request, HttpServletResponse response){
+    public void order(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String[] list_id= request.getParameterValues("idList");
         String[] list_num= request.getParameterValues("numList");
-        System.out.println(list_num.length);
         String[] list_price= request.getParameterValues("priceList");
         String username = request.getParameter("username");
+        String addressId =request.getParameter("addressId");
         User user= userService.getUserByName(username);
 
         List<CartVo> cartVoList=new ArrayList<>();
@@ -316,11 +318,45 @@ public class ShopActionController {
             cartVo.setNum(Integer.parseInt(list_num[i]));
             cartVo.setPrice(Double.parseDouble(list_price[i]));
             cartVo.setProductId(Integer.parseInt(list_id[i]));
+            cartVoList.add(cartVo);
+
         }
 
-        orderService.addOrder(cartVoList, user.getUserId());
+        String orderId = orderService.addOrder(cartVoList, user.getUserId(),Integer.parseInt(addressId));
+        List<CartVo> list= shoppingCartService.getCartByUserId(""+user.getUserId());
+        StatusCode statusCode=new StatusCode();
+        statusCode.setCode(1);
+        statusCode.setData(orderId);
+        statusCode.setCount(list.size());
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+
     }
 
+
+    @RequestMapping("/order/all")
+    public void order_all(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        String username = request.getParameter("username");
+        User user= userService.getUserByName(username);
+        System.out.println(user.getUserId());
+
+        List<OrderVoVo> list= orderService.getOrderVoVo(user.getUserId());
+
+        StatusCode statusCode=new StatusCode();
+        statusCode.setCode(1);
+        statusCode.setData(list);
+        response.setContentType("application/json;charset=utf-8");
+        JSONObject jsonObject=JSONObject.fromObject(statusCode);
+        response.getWriter().write(jsonObject.toString());
+    }
+
+    @RequestMapping("/order/{orderId}")
+    public void order_id(@PathVariable String orderId ,HttpServletRequest request, HttpServletResponse response){
+        orderService.getOrderByOrderId(orderId);
+
+    }
 
 
 

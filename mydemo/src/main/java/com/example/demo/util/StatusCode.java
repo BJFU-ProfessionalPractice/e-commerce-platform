@@ -1,5 +1,7 @@
 package com.example.demo.util;
 
+import org.omg.CORBA.TIMEOUT;
+
 public class StatusCode {
     private int code;
     private String msg;
