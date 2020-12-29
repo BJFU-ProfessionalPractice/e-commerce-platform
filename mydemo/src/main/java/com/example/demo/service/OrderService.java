@@ -126,26 +126,35 @@ public class OrderService {
                 System.out.println(orderList.get(i).getAddressId());
             }
             orderIdSet.forEach(v->{
-                OrderVoVo orderVoVo=new OrderVoVo();
-                Double total= 0.0;
-                List<Order> orderList1=new ArrayList<>();
-                for(int i=0;i<orderList.size();i++){
-                    if(orderList.get(i).getOrderId().equals(v)){
-                        orderList1.add(orderList.get(i));
-                        total+=orderList.get(i).getProductPrice()*orderList.get(i).getProductNum();
-
-                        final Date date = new Date(orderList.get(i).getOrderTime());//新建一个时间对象
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        final String yourtime = sdf.format(date);
-                        orderVoVo.setTime(yourtime);
-                        orderVoVo.setState(orderList.get(i).getState());
-                        Address address =addressMapper.selectByPrimaryKey(orderList.get(i).getAddressId());
-                        orderVoVo.setPeople(address.getPeople());
-                    }
-                }
-                orderVoVo.setOrderList(orderList1);
-                orderVoVo.setTotalPrice(total);
-                orderVoVoList.add(orderVoVo);
+                        OrderVoVo orderVoVo=new OrderVoVo();
+                        Double total= 0.0;
+                        List<OrderVo> orderList1=new ArrayList<>();
+                        for(int i=0;i<orderList.size();i++){
+                            if(orderList.get(i).getOrderId().equals(v)){
+                                total+=orderList.get(i).getProductPrice()*orderList.get(i).getProductNum();
+                                final Date date = new Date(orderList.get(i).getOrderTime());//新建一个时间对象
+                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                                final String yourtime = sdf.format(date);
+                                orderVoVo.setTime(yourtime);
+                                orderVoVo.setState(orderList.get(i).getState());
+                                Address address =addressMapper.selectByPrimaryKey(orderList.get(i).getAddressId());
+                                orderVoVo.setAddress(address);
+                                OrderVo orderVo = new OrderVo();
+                                orderVo.setProductNum(orderList.get(i).getProductNum());
+                                orderVo.setProductPrice(orderList.get(i).getProductPrice());
+                                Example example1 = new Example(Product.class);
+                                example1.selectProperties("productName","productPicture")
+                                        .and()
+                                        .andEqualTo("productId",orderList.get(i).getProductId());
+                                Product product = productMapper.selectByExample(example).get(0);
+                                orderVo.setProductName(product.getProductName());
+                                orderVo.setProductPicture(product.getProductPicture());
+                                orderList1.add(orderVo);
+                            }
+                        }
+                        orderVoVo.setOrderList(orderList1);
+                        orderVoVo.setTotalPrice(total);
+                        orderVoVoList.add(orderVoVo);
             }
             );
 

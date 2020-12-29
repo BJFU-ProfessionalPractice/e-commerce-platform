@@ -5,13 +5,28 @@ import com.example.demo.pojo.Order;
 import java.util.List;
 
 public class OrderVoVo {
-    private String people;
+    private Address address;
     private String time;
     private Integer orderId;
     private Integer state;
     private Double totalPrice;
-    private List<Order> orderList;
+    private List<OrderVo> orderList;
 
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public List<OrderVo> getOrderList() {
+        return orderList;
+    }
+
+    public void setOrderList(List<OrderVo> orderList) {
+        this.orderList = orderList;
+    }
 
     public Double getTotalPrice() {
         return totalPrice;
@@ -21,21 +36,6 @@ public class OrderVoVo {
         this.totalPrice = totalPrice;
     }
 
-    public List<Order> getOrderList() {
-        return orderList;
-    }
-
-    public void setOrderList(List<Order> orderList) {
-        this.orderList = orderList;
-    }
-
-    public String getPeople() {
-        return people;
-    }
-
-    public void setPeople(String people) {
-        this.people = people;
-    }
 
     public String getTime() {
         return time;
