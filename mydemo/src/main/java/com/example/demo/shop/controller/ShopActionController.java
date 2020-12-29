@@ -1,25 +1,19 @@
 package com.example.demo.shop.controller;
 
-import com.example.demo.pojo.Address;
-import com.example.demo.pojo.Product;
-import com.example.demo.pojo.ShoppingCart;
-import com.example.demo.pojo.User;
+import com.example.demo.pojo.*;
 import com.example.demo.service.*;
 import com.example.demo.util.StatusCode;
 import com.example.demo.vo.CartVo;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import com.example.demo.util.IPAddress;
 
@@ -305,6 +299,34 @@ public class ShopActionController {
         address.setShopuserId(user.getUserId());
         addressService.addAddress(address);
     }
+
+
+    @RequestMapping("/order")
+    public void order(HttpServletRequest request, HttpServletResponse response){
+        String[] list_id= request.getParameterValues("idList");
+        String[] list_num= request.getParameterValues("numList");
+        System.out.println(list_num.length);
+        String[] list_price= request.getParameterValues("priceList");
+        String username = request.getParameter("username");
+        User user= userService.getUserByName(username);
+
+        List<CartVo> cartVoList=new ArrayList<>();
+        for(int i=0;i<list_id.length;i++){
+            CartVo cartVo=new CartVo();
+            cartVo.setNum(Integer.parseInt(list_num[i]));
+            cartVo.setPrice(Double.parseDouble(list_price[i]));
+            cartVo.setProductId(Integer.parseInt(list_id[i]));
+        }
+
+        orderService.addOrder(cartVoList, user.getUserId());
+    }
+
+
+
+
+
+
+
 
 
 
